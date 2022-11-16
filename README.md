@@ -46,3 +46,10 @@ example : https://otakudesu-anime-api.vercel.app/api/v1/search/black%20clover
 /api/v1/anime-list
 ```
 example : https://otakudesu-anime-api.vercel.app/api/v1/anime-list
+
+## Anime Detail
+[endpoint] : String
+```
+/api/v1/detail/[endpoint]
+```
+example : https://otakudesu-anime-api.vercel.app/api/v1/detail/chaisaw-sub-indo
