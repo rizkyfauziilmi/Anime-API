@@ -53,3 +53,10 @@ example : https://otakudesu-anime-api.vercel.app/api/v1/anime-list
 /api/v1/detail/[endpoint]
 ```
 example : https://otakudesu-anime-api.vercel.app/api/v1/detail/chaisaw-sub-indo
+
+## Batch Link
+[endpoint] : String
+```
+/api/v1/batch/[endpoint]
+```
+example : https://otakudesu-anime-api.vercel.app/api/v1/batch/hakumao-s2-batch-sub-indo/

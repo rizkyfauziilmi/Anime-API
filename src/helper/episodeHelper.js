@@ -80,7 +80,30 @@ const episodeHelper = {
             });
         });
         return response;
-    }
+    },
+    batchQualityFunction: (num, res) => {
+        const $ = cheerio.load(res);
+        const element = $(".batchlink");
+        const download_links = [];
+        let response;
+        element.find("ul").filter(function () {
+          const quality = $(this).find("li").eq(num).find("strong").text();
+          const size = $(this).find("li").eq(num).find("i").text();
+          $(this)
+            .find("li")
+            .eq(num)
+            .find("a")
+            .each(function () {
+              const _list = {
+                host: $(this).text(),
+                link: $(this).attr("href"),
+              };
+              download_links.push(_list);
+              response = { quality, size, download_links };
+            });
+        });
+        return response;
+      }
 }
 
 module.exports = episodeHelper

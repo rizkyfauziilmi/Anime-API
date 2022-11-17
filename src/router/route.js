@@ -14,7 +14,8 @@ route.get("/", (req, res) => {
             getAnimeSearch: "/api/v1/search/:q",
             getAnimeList: "/api/v1/anime-list",
             getAnimeDetail: "/api/v1/detail/:endpoint",
-            getAnimeEpisode: "/api/v1/episode/:endpoint"
+            getAnimeEpisode: "/api/v1/episode/:endpoint",
+            getBatchLink: "/api/v1/batch/:endpoint"
         }
     })
 })
@@ -245,7 +246,7 @@ route.get("/api/v1/detail/:endpoint", async (req, res) => {
 
             episodeElement.find("li").each((index, el) => {
                 episode_title = $(el).find("span > a").text()
-                episode_endpoint = $(el).find("span > a").attr("href").replace(`${baseUrl}/episode/`, "").replace(`${baseUrl}/`, "")
+                episode_endpoint = $(el).find("span > a").attr("href").replace(`${baseUrl}/episode/`, "").replace(`${baseUrl}/batch/`, "").replace(`${baseUrl}/lengkap/`, "")
                 episode_date = $(el).find(".zeebr").text()
 
 
@@ -345,6 +346,31 @@ router.get("/api/v1/episode/:endpoint", async (req, res) => {
         res.send(obj);
     } catch (err) {
         console.log(err);
+    }
+})
+// Get Batch Link -Done-
+router.get("/api/v1/batch/:endpoint", async (req, res) => {
+    const endpoint = req.params.endpoint;
+    const fullUrl = `${baseUrl}/batch/${endpoint}`;
+    console.log(fullUrl);
+    try {
+        const response = await services.fetchService(fullUrl, res)
+        const $ = cheerio.load(response.data);
+        const batch = {};
+        batch.title = $(".batchlink > h4").text();
+        batch.status = "success";
+        batch.baseUrl = fullUrl;
+        let low_quality = episodeHelper.batchQualityFunction(0, response.data);
+        let medium_quality = episodeHelper.batchQualityFunction(1, response.data);
+        let high_quality = episodeHelper.batchQualityFunction(2, response.data);
+        batch.download_list = { low_quality, medium_quality, high_quality };
+        res.send({
+            status: true,
+            message: "succes",
+            batch
+        });
+    } catch (error) {
+        console.log(error)   
     }
 })
 
