@@ -3,6 +3,8 @@ const route = router
 const services = require("../helper/sevice")
 const cheerio = require("cheerio")
 const baseUrl = require("../constant/url")
+const episodeHelper = require("../helper/episodeHelper")
+
 
 route.get("/", (req, res) => {
     res.send({
@@ -11,10 +13,12 @@ route.get("/", (req, res) => {
             getCompletedAnime: "/api/v1/completed/:page",
             getAnimeSearch: "/api/v1/search/:q",
             getAnimeList: "/api/v1/anime-list",
-            getAnimeDetail: "/api/v1/detail/:endpoint"
+            getAnimeDetail: "/api/v1/detail/:endpoint",
+            getAnimeEpisode: "/api/v1/episode/:endpoint"
         }
     })
 })
+
 
 // Get Ongoing Anime -Done-
 router.get("/api/v1/ongoing/:page", async (req, res) => {
@@ -42,13 +46,14 @@ router.get("/api/v1/ongoing/:page", async (req, res) => {
                     total_episode,
                     updated_on,
                     updated_day,
-                    endpoint
+                    endpoint,
                 })
             })
             return res.status(200).json({
                 status: true,
                 message: "success",
-                ongoing
+                ongoing,
+                currentPage: page
             })
         }
         return res.send({
@@ -91,14 +96,15 @@ router.get("/api/v1/completed/:page", async (req, res) => {
                     total_episode,
                     updated_on,
                     score,
-                    endpoint
+                    endpoint,
                 })
             })
 
             return res.status(200).json({
                 status: true,
                 message: "success",
-                completed
+                completed,
+                currentPage: page
             })
         }
         return res.send({
@@ -140,13 +146,14 @@ router.get("/api/v1/search/:q", async (req, res) => {
                     genres,
                     status,
                     rating,
-                    endpoint
+                    endpoint,
                 })
             })
             return res.status(200).json({
                 status: true,
                 message: "success",
-                search
+                search,
+                query
             })
         }
         return res.send({
@@ -253,7 +260,8 @@ route.get("/api/v1/detail/:endpoint", async (req, res) => {
                 status: true,
                 message: "success",
                 anime_detail,
-                episode_list
+                episode_list,
+                endpoint
             })
         }
         res.send({
@@ -269,6 +277,74 @@ route.get("/api/v1/detail/:endpoint", async (req, res) => {
             anime_detail: [],
             episode_list: []
         });
+    }
+})
+// Get Anime Episode -Done-
+router.get("/api/v1/episode/:endpoint", async (req, res) => {
+    const endpoint = req.params.endpoint;
+    const url = `${baseUrl}/episode/${endpoint}`;
+    try {
+        const response = await services.fetchService(url, res);
+        const $ = cheerio.load(response.data);
+        const streamElement = $("#lightsVideo").find("#embed_holder");
+        const obj = {};
+        obj.title = $(".venutama > h1").text();
+        obj.baseUrl = url;
+        obj.id = url.replace(url.baseUrl, "");
+        obj.streamLink = streamElement.find(".responsive-embed-stream > iframe").attr("src");
+        // const streamLinkResponse = await Axios.get(streamLink)
+        // const stream$ = cheerio.load(streamLinkResponse.data)
+        // const sl = stream$('body').find('script').html().search('sources')
+        // const endIndex = stream$('body').find('script').eq(0).html().indexOf('}]',sl)
+        // const val = stream$('body').find('script').eq(0).html().substr(sl,endIndex - sl+1).replace(`sources: [{'file':'`,'')
+        // console.log(val);
+        // console.log(val.replace(`','type':'video/mp4'}`,''));
+        // obj.link_stream = await episodeHelper.get(streamLink);
+        console.log($('#pembed > div > iframe').attr('src'));
+        let low_quality;
+        let medium_quality;
+        let high_quality;
+        let mirror1 = [];
+        let mirror2 = [];
+        let mirror3 = [];
+
+        $('#embed_holder > div.mirrorstream > ul.m360p > li').each((idx, el) => {
+            ``
+            mirror1.push({
+                host: $(el).find('a').text().trim(),
+                id: $(el).find('a').attr('href'),
+            });
+        });
+        $('#embed_holder > div.mirrorstream > ul.m480p > li').each((idx, el) => {
+            mirror2.push({
+                host: $(el).find('a').text().trim(),
+                id: $(el).find('a').attr('href'),
+            });
+        });
+        $('#embed_holder > div.mirrorstream > ul.m720p > li').each((idx, el) => {
+            mirror3.push({
+                host: $(el).find('a').text().trim(),
+                id: $(el).find('a').attr('href'),
+            });
+        });
+        obj.mirror1 = { quality: '360p', mirrorList: mirror1 }
+        obj.mirror2 = { quality: '480p', mirrorList: mirror2 }
+        obj.mirror3 = { quality: '720p', mirrorList: mirror3 }
+        if ($('#venkonten > div.venser > div.venutama > div.download > ul > li:nth-child(1)').text() === '') {
+            console.log('ul is empty');
+            low_quality = episodeHelper.notFoundQualityHandler(response.data, 0)
+            medium_quality = episodeHelper.notFoundQualityHandler(response.data, 1)
+            high_quality = episodeHelper.notFoundQualityHandler(response.data, 2)
+        } else {
+            console.log('ul is not empty');
+            low_quality = episodeHelper.epsQualityFunction(0, response.data);
+            medium_quality = episodeHelper.epsQualityFunction(1, response.data);
+            high_quality = episodeHelper.epsQualityFunction(2, response.data);
+        }
+        obj.quality = { low_quality, medium_quality, high_quality };
+        res.send(obj);
+    } catch (err) {
+        console.log(err);
     }
 })
 
