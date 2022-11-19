@@ -257,6 +257,7 @@ route.get("/api/v1/detail/:endpoint", async (req, res) => {
                     episode_date
                 })
             })
+            episode_list.pop()
 
             return res.status(200).json({
                 status: true,
@@ -290,22 +291,35 @@ router.get("/api/v1/episode/:endpoint", async (req, res) => {
         const $ = cheerio.load(response.data);
         const streamElement = $("#lightsVideo").find("#embed_holder");
         const obj = {};
+        obj.title = $(".venutama > h1").text();
+        obj.baseUrl = url;
+        obj.id = url.replace(url.baseUrl, "");
+        obj.streamLink = streamElement.find(".responsive-embed-stream > iframe").attr("src");
         obj.relative = []
         let link_ref, title_ref
         $(".flir > a").each((index, el) => {
             title_ref = $(el).text()
-            link_ref = $(el).attr("href")
+            link_ref = $(el).attr("href").replace("https://otakudesu.bid/anime/", "").replace("https://otakudesu.bid/episode/", "")
 
             obj.relative.push({
                 title_ref,
                 link_ref
             })
         })
-        obj.title = $(".venutama > h1").text();
-        obj.baseUrl = url;
-        obj.id = url.replace(url.baseUrl, "");
-        obj.streamLink = streamElement.find(".responsive-embed-stream > iframe").attr("src");
-        // const streamLinkResponse = await Axios.get(streamLink)
+        obj.list_episode = []
+        let list_episode_title, list_episode_endpoint
+        $("#selectcog > option").each((index, el) => {
+            list_episode_title = $(el).text()
+            list_episode_endpoint = $(el).attr("value").replace("https://otakudesu.bid/episode/", "")
+            obj.list_episode.push({
+                list_episode_title,
+                list_episode_endpoint
+            })
+        })
+        obj.list_episode.shift()
+        const streamLinkResponse = streamElement.find("iframe").attr("src");
+        obj.link_stream_response = await episodeHelper.get(streamLinkResponse);
+        $("iframe").attr("src")
         // const stream$ = cheerio.load(streamLinkResponse.data)
         // const sl = stream$('body').find('script').html().search('sources')
         // const endIndex = stream$('body').find('script').eq(0).html().indexOf('}]',sl)
@@ -382,7 +396,7 @@ router.get("/api/v1/batch/:endpoint", async (req, res) => {
             batch
         });
     } catch (error) {
-        console.log(error)   
+        console.log(error)
     }
 })
 
