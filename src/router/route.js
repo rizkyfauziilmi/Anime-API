@@ -226,7 +226,7 @@ route.get("/api/v1/detail/:endpoint", async (req, res) => {
             const episodeElement = $(".episodelist")
             let anime_detail = {}
             let episode_list = []
-            let thumb, sinopsis = [], detail = [], episode_title, episode_endpoint, episode_date
+            let thumb, sinopsis = [], detail = [], episode_title, episode_endpoint, episode_date, title
 
             infoElement.each((index, el) => {
                 thumb = $(el).find("img").attr("src")
@@ -241,6 +241,9 @@ route.get("/api/v1/detail/:endpoint", async (req, res) => {
                 anime_detail.sinopsis = sinopsis
                 anime_detail.detail = detail
             })
+
+            title = $(".jdlrx > h1").text()
+            anime_detail.title = title
 
             episodeElement.find("li").each((index, el) => {
                 episode_title = $(el).find("span > a").text()
