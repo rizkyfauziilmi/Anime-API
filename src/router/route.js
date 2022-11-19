@@ -224,7 +224,7 @@ route.get("/api/v1/detail/:endpoint", async (req, res) => {
             const $ = cheerio.load(response.data)
             const infoElement = $(".fotoanime")
             const episodeElement = $(".episodelist")
-            let anime_detail = []
+            let anime_detail = {}
             let episode_list = []
             let thumb, sinopsis = [], detail = [], episode_title, episode_endpoint, episode_date
 
@@ -237,11 +237,9 @@ route.get("/api/v1/detail/:endpoint", async (req, res) => {
                     detail.push($(el).text())
                 })
 
-                anime_detail.push({
-                    thumb,
-                    sinopsis,
-                    detail
-                })
+                anime_detail.thumb = thumb
+                anime_detail.sinopsis = sinopsis
+                anime_detail.detail = detail
             })
 
             episodeElement.find("li").each((index, el) => {
