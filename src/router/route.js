@@ -290,6 +290,17 @@ router.get("/api/v1/episode/:endpoint", async (req, res) => {
         const $ = cheerio.load(response.data);
         const streamElement = $("#lightsVideo").find("#embed_holder");
         const obj = {};
+        obj.relative = []
+        let link_ref, title_ref
+        $(".flir > a").each((index, el) => {
+            title_ref = $(el).text()
+            link_ref = $(el).attr("href")
+
+            obj.relative.push({
+                title_ref,
+                link_ref
+            })
+        })
         obj.title = $(".venutama > h1").text();
         obj.baseUrl = url;
         obj.id = url.replace(url.baseUrl, "");
