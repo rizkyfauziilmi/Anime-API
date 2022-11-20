@@ -250,14 +250,12 @@ route.get("/api/v1/detail/:endpoint", async (req, res) => {
                 episode_endpoint = $(el).find("span > a").attr("href").replace(`${baseUrl}/episode/`, "").replace(`${baseUrl}/batch/`, "").replace(`${baseUrl}/lengkap/`, "")
                 episode_date = $(el).find(".zeebr").text()
 
-
                 episode_list.push({
                     episode_title,
                     episode_endpoint,
                     episode_date
                 })
             })
-            episode_list.pop()
 
             return res.status(200).json({
                 status: true,
@@ -319,7 +317,6 @@ router.get("/api/v1/episode/:endpoint", async (req, res) => {
         obj.list_episode.shift()
         const streamLinkResponse = streamElement.find("iframe").attr("src");
         obj.link_stream_response = await episodeHelper.get(streamLinkResponse);
-        $("iframe").attr("src")
         // const stream$ = cheerio.load(streamLinkResponse.data)
         // const sl = stream$('body').find('script').html().search('sources')
         // const endIndex = stream$('body').find('script').eq(0).html().indexOf('}]',sl)
