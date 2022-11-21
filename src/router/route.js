@@ -15,7 +15,9 @@ route.get("/", (req, res) => {
             getAnimeList: "/api/v1/anime-list",
             getAnimeDetail: "/api/v1/detail/:endpoint",
             getAnimeEpisode: "/api/v1/episode/:endpoint",
-            getBatchLink: "/api/v1/batch/:endpoint"
+            getBatchLink: "/api/v1/batch/:endpoint",
+            getGenreList: "/api/v1/genres",
+            getGenrePage: "/api/v1/genres/:genre/:page"
         }
     })
 })
@@ -39,7 +41,7 @@ router.get("/api/v1/ongoing/:page", async (req, res) => {
                 total_episode = $(el).find(".epz").text()
                 updated_on = $(el).find(".newnime").text()
                 updated_day = $(el).find(".epztipe").text()
-                endpoint = $(el).find(".thumb > a").attr("href").replace(`${baseUrl}/anime/`, "")
+                endpoint = $(el).find(".thumb > a").attr("href").replace(`${baseUrl}/anime/`, "").replace("/", "")
 
                 ongoing.push({
                     title,
@@ -89,7 +91,7 @@ router.get("/api/v1/completed/:page", async (req, res) => {
                 total_episode = $(el).find(".epz").text()
                 updated_on = $(el).find(".newnime").text()
                 score = $(el).find(".epztipe").text().trim()
-                endpoint = $(el).find(".thumb > a").attr("href").replace(`${baseUrl}/anime/`, "")
+                endpoint = $(el).find(".thumb > a").attr("href").replace(`${baseUrl}/anime/`, "").replace("/", "")
 
                 completed.push({
                     title,
@@ -139,7 +141,7 @@ router.get("/api/v1/search/:q", async (req, res) => {
                 genres = $(el).find(".set > a").text().match(/[A-Z][a-z]+/g)
                 status = $(el).find(".set").text().match("Ongoing") || $(el).find(".set").text().match("Completed")
                 rating = $(el).find(".set").text().replace(/^\D+/g, '') || null
-                endpoint = $(el).find("h2 > a").attr("href").replace(`${baseUrl}/anime/`, "")
+                endpoint = $(el).find("h2 > a").attr("href").replace(`${baseUrl}/anime/`, "").replace("/", "")
 
                 search.push({
                     title,
@@ -247,7 +249,7 @@ route.get("/api/v1/detail/:endpoint", async (req, res) => {
 
             episodeElement.find("li").each((index, el) => {
                 episode_title = $(el).find("span > a").text()
-                episode_endpoint = $(el).find("span > a").attr("href").replace(`${baseUrl}/episode/`, "").replace(`${baseUrl}/batch/`, "").replace(`${baseUrl}/lengkap/`, "")
+                episode_endpoint = $(el).find("span > a").attr("href").replace(`${baseUrl}/episode/`, "").replace(`${baseUrl}/batch/`, "").replace(`${baseUrl}/lengkap/`, "").replace("/", "")
                 episode_date = $(el).find(".zeebr").text()
 
                 episode_list.push({
@@ -297,7 +299,7 @@ router.get("/api/v1/episode/:endpoint", async (req, res) => {
         let link_ref, title_ref
         $(".flir > a").each((index, el) => {
             title_ref = $(el).text()
-            link_ref = $(el).attr("href").replace("https://otakudesu.bid/anime/", "").replace("https://otakudesu.bid/episode/", "")
+            link_ref = $(el).attr("href").replace("https://otakudesu.bid/anime/", "").replace("https://otakudesu.bid/episode/", "").replace("/", "")
 
             obj.relative.push({
                 title_ref,
@@ -308,7 +310,7 @@ router.get("/api/v1/episode/:endpoint", async (req, res) => {
         let list_episode_title, list_episode_endpoint
         $("#selectcog > option").each((index, el) => {
             list_episode_title = $(el).text()
-            list_episode_endpoint = $(el).attr("value").replace("https://otakudesu.bid/episode/", "")
+            list_episode_endpoint = $(el).attr("value").replace("https://otakudesu.bid/episode/", "").replace("/", "")
             obj.list_episode.push({
                 list_episode_title,
                 list_episode_endpoint
@@ -394,6 +396,95 @@ router.get("/api/v1/batch/:endpoint", async (req, res) => {
         });
     } catch (error) {
         console.log(error)
+    }
+})
+// Get Genre List -Done-
+router.get("/api/v1/genres", async (req, res) => {
+    const url = `${baseUrl}/genre-list/`
+    try {
+        const response = await services.fetchService(url, res)
+        if (response.status === 200) {
+            const $ = cheerio.load(response.data)
+            let genres = [], genre, endpoint
+            $('.genres').find("a").each((index, el) => {
+                genre = $(el).text()
+                endpoint = $(el).attr('href').replace("/genres/", "").replace("/", "")
+    
+                genres.push({
+                    genre,
+                    endpoint
+                })
+            })
+            return res.status(200).json({
+                status: true,
+                message: 'success',
+                genres
+            })
+        }
+        res.send({
+            message: response.status,
+            genres: []
+        })
+    } catch (error) {
+        console.log(error);
+        res.send({
+            status: false,
+            message: error,
+            genres: []
+        });
+    }
+}) 
+// Get Genre Page -Done-
+router.get("/api/v1/genres/:genre/:page", async (req, res) => {
+    const genre = req.params.genre
+    const page = req.params.page
+    const url = page === 1 ? `https://otakudesu.bid/genres/${genre}` : `https://otakudesu.bid/genres/${genre}/page/${page}`
+    
+    try {
+        const response = await services.fetchService(url, res)
+
+        if (response.status === 200) {
+            const $ = cheerio.load(response.data)
+            let genreAnime = [], title, link, studio, episode, rating, thumb, season, sinopsis, genre
+            $('.col-anime-con').each((index, el) => {
+                title = $(el).find(".col-anime-title > a").text()
+                link = $(el).find(".col-anime-title > a").attr("href").replace("https://otakudesu.bid/anime/", "")
+                studio = $(el).find(".col-anime-studio").text()
+                episode = $(el).find(".col-anime-eps").text()
+                rating = $(el).find(".col-anime-rating").text() || null
+                thumb = $(el).find(".col-anime-cover > img").attr("src")
+                season = $(el).find(".col-anime-date").text()
+                sinopsis = $(el).find(".col-synopsis").text()
+                genre = $(el).find(".col-anime-genre").text().trim().split(",")
+
+                genreAnime.push({
+                    title,
+                    link,
+                    studio,
+                    episode,
+                    rating,
+                    thumb,
+                    genre,
+                    sinopsis
+                })
+            })
+            return res.status(200).json({
+                status: true,
+                message: "success",
+                genreAnime
+            })
+        }
+        return res.send({
+            message: response.status,
+            genreAnime: []
+        })
+    } catch (error) {
+        console.log(error)
+        res.send({
+            status: false,
+            message: error,
+            genreAnime: []
+        })
     }
 })
 

@@ -60,3 +60,17 @@ example : https://otakudesu-anime-api.vercel.app/api/v1/detail/chaisaw-sub-indo
 /api/v1/batch/[endpoint]
 ```
 example : https://otakudesu-anime-api.vercel.app/api/v1/batch/hakumao-s2-batch-sub-indo/
+
+## Genre List
+```
+/api/v1/genres
+```
+example : https://otakudesu-anime-api.vercel.app/api/v1/genres
+
+## Genre Page
+[genre] : String
+[page] : 1 - ... (depend on genre)
+```
+/api/v1/genres/[genre]/[page]
+```
+example : https://otakudesu-anime-api.vercel.app/api/v1/genres/action/1
