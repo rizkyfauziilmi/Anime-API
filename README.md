@@ -1,5 +1,7 @@
 # otakudesu-anime-api
-this is my first time web scraping, all this data API from https://otakudesu.bid/
+RESTful API for anime using web scraping techniques with the help of Cheerio and Express. The API scrapes data from a website and transforms it into usable data for the application. Cheerio is used to process HTML data and make it more easily accepted by the application. Express is used to build a fast and efficient API. This repository is perfect for developers looking to create an anime application or learn how to build a RESTful API using web scraping techniques and Cheerio and Express.
+
+***this is my first time web scraping, all this data API from this [website](https://otakudesu.bid/)***
 
 # Usage
 1. Clone this repository
