@@ -6,7 +6,7 @@ RESTful API for anime using web scraping techniques with the help of Cheerio and
 # Usage
 1. Clone this repository
     ```bash
-    git clone https://github.com/RizkyFauziIlmi/otakudesu-anime-api.git
+    git clone https://github.com/RizkyFauziIlmi/Anime-API.git
     ```
 2. Install dependecies (`yarn` or `npm install`)
     ```bash
