@@ -1,16 +1,22 @@
 {
   "name": "web-scrapping",
-  "version": "1.0.0",
-  "description": "learn web scrapping",
+  "version": "1.0.1",
+  "description": "Anime API web scraping",
   "main": "index.js",
+  "private": "false",
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js"
   },
   "keywords": [
-    "nodejs"
+    "nodejs",
+    "api",
+    "express",
+    "anime",
+    "cheerio",
+    "webscraping",
+    "restful-api"
   ],
-  "author": "Rizkyfauziilmi",
   "license": "MIT",
   "dependencies": {
     "axios": "^0.27.2",
@@ -19,5 +25,24 @@
     "express": "^4.17.1",
     "nodemon": "^2.0.4",
     "puppeteer": "^19.2.2"
+  },
+  "contributors": [{
+    "email": "rizkyfauziilmi@gmail.com",
+    "name": "Rizky Fauzi Ilmi",
+    "url": "https://github.com/RizkyFauziIlmi"
+  }],
+  "author": {
+    "email": "rizkyfauziilmi@gmail.com",
+    "name": "Rizky Fauzi Ilmi",
+    "url": "https://github.com/RizkyFauziIlmi"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RizkyFauziIlmi/Anime-API.git"
+  },
+  "homepage": "https://github.com/RizkyFauziIlmi/Anime-API#readme",
+  "bugs": {
+    "email": "rizkyfauziilmi@gmail.com",
+    "url": "https://github.com/RizkyFauziIlmi/Anime-API/issues"
   }
 }

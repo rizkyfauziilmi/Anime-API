@@ -6,7 +6,8 @@ const episodeHelper = require("../helper/episodeHelper")
 const Services = {
     getOngoing: async (req, res) => {
         const page = req.params.page
-        let url = page === 1 ? "https://otakudesu.bid/ongoing-anime/" : `https://otakudesu.bid/ongoing-anime/page/${page}/`
+
+        let url = page === "1" ? `${baseUrl}/ongoing-anime/` : `${baseUrl}/ongoing-anime/page/${page}/`
         try {
             const response = await services.fetchService(url, res)
             if (response.status === 200) {
@@ -54,7 +55,7 @@ const Services = {
     },
     getCompleted: async (req, res) => {
         const page = req.params.page
-        let url = page === 1 ? "https://otakudesu.bid/complete-anime/" : `https://otakudesu.bid/complete-anime/page/${page}/`
+        let url = page === "1" ? `${baseUrl}/complete-anime/` : `${baseUrl}/complete-anime/page/${page}/`
     
         try {
             const response = await services.fetchService(url, res)
@@ -104,7 +105,7 @@ const Services = {
     },
     getSearch: async (req, res) => {
         const query = req.params.q
-        let url = `https://otakudesu.bid/?s=${query}&post_type=anime`
+        let url = `${baseUrl}/?s=${query}&post_type=anime`
         try {
             const response = await services.fetchService(url, res)
             if (response.status === 200) {
@@ -151,7 +152,7 @@ const Services = {
         }
     },
     getAnimeList: async (req, res) => {
-        let url = "https://otakudesu.bid/anime-list-2/"
+        let url = `${baseUrl}/anime-list-2/`
         try {
             const response = await services.fetchService(url, res)
             if (response.status === 200) {
@@ -194,7 +195,7 @@ const Services = {
     },
     getAnimeDetail: async (req, res) => {
         const endpoint = req.params.endpoint
-        let url = `https://otakudesu.bid/anime/${endpoint}/`
+        let url = `${baseUrl}/anime/${endpoint}/`
     
         try {
             const response = await services.fetchService(url, res)
@@ -274,7 +275,7 @@ const Services = {
             let link_ref, title_ref
             $(".flir > a").each((index, el) => {
                 title_ref = $(el).text()
-                link_ref = $(el).attr("href").replace("https://otakudesu.bid/anime/", "").replace("https://otakudesu.bid/episode/", "").replace("/", "")
+                link_ref = $(el).attr("href").replace(`${baseUrl}/anime/`, "").replace(`${baseUrl}/episode/${baseUrl}`)
     
                 obj.relative.push({
                     title_ref,
@@ -285,7 +286,7 @@ const Services = {
             let list_episode_title, list_episode_endpoint
             $("#selectcog > option").each((index, el) => {
                 list_episode_title = $(el).text()
-                list_episode_endpoint = $(el).attr("value").replace("https://otakudesu.bid/episode/", "").replace("/", "")
+                list_episode_endpoint = $(el).attr("value").replace(`${baseUrl}/episode/`, "").replace("/", "")
                 obj.list_episode.push({
                     list_episode_title,
                     list_episode_endpoint
@@ -410,7 +411,7 @@ const Services = {
     getGenrePage: async (req, res) => {
         const genre = req.params.genre
         const page = req.params.page
-        const url = page === 1 ? `https://otakudesu.bid/genres/${genre}` : `https://otakudesu.bid/genres/${genre}/page/${page}`
+        const url = page === "1" ? `${baseUrl}/genres/${genre}` : `${baseUrl}/genres/${genre}/page/${page}`
         
         try {
             const response = await services.fetchService(url, res)
@@ -420,7 +421,7 @@ const Services = {
                 let genreAnime = [], title, link, studio, episode, rating, thumb, season, sinopsis, genre
                 $('.col-anime-con').each((index, el) => {
                     title = $(el).find(".col-anime-title > a").text()
-                    link = $(el).find(".col-anime-title > a").attr("href").replace("https://otakudesu.bid/anime/", "")
+                    link = $(el).find(".col-anime-title > a").attr("href").replace(`${baseUrl}/anime/`, "")
                     studio = $(el).find(".col-anime-studio").text()
                     episode = $(el).find(".col-anime-eps").text()
                     rating = $(el).find(".col-anime-rating").text() || null
