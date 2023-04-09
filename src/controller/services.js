@@ -152,7 +152,7 @@ const Services = {
         }
     },
     getAnimeList: async (req, res) => {
-        let url = `${baseUrl}/anime-list-2/`
+        let url = `${baseUrl}/anime-list/`
         try {
             const response = await services.fetchService(url, res)
             if (response.status === 200) {
@@ -163,7 +163,13 @@ const Services = {
     
                 element.find(".penzbar").each((index, el) => {
                     title = $(el).find("a").text() || null
+                    // TODO: @RizkyFauziIlmi removed the base link from endpoint. issue #3 
                     endpoint = $(el).find("a").attr("href")
+                    // * somtimes the endpoint is undefined, this code to prevent that behavior
+                    if (typeof endpoint === "string") {
+                        endpoint = endpoint.replace(`${baseUrl}/anime/`, "").replace("/", "")
+                    }
+                    
     
                     anime_list.push({
                         title,
